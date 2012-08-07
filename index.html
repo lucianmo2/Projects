@@ -1,121 +1,73 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html> 
 <html>
 <head>
-<title>PhoneGap</title>
-	<script type="text/javascript" charset="utf-8" src="phonegap-0.9.3.js"></script>
+<meta charset="utf-8">
+<title>jQuery Mobile Web App</title>
+<link href="jquery-mobile/jquery.mobile.theme-1.0.min.css" rel="stylesheet" type="text/css"/>
+<link href="tw/twatcher.min.css" rel="stylesheet" type="text/css"/>
+<link href="jquery-mobile/jquery.mobile.structure-1.0.min.css" rel="stylesheet" type="text/css"/>
+<script src="jquery-mobile/jquery-1.6.4.min.js" type="text/javascript"></script>
+<script src="jquery-mobile/jquery.mobile-1.0.min.js" type="text/javascript"></script>
+<script src="cordova.js" type="text/javascript"></script>
+<script src="scripts/geocore.js" type="text/javascript"></script>
+<script src="smsplugin.js" type="text/javascript"></script>
+</head> 
+<body> 
+<script type="application/x-javascript">
 
+document.addEventListener("deviceready", onDeviceReady, false);    
+// Cordova is ready    //    
+function onDeviceReady() {        
+	var element = document.getElementById('message');        
+	element.innerHTML = 'Device Name: '     + device.name     + '<br />' +                             'Device PhoneGap: ' + device.phonegap + '<br />' +                             'Device Platform: ' + device.platform + '<br />' +                             'Device UUID: '     + device.uuid     + '<br />' +                             'Device Version: '  + device.version  + '<br />';    
+	notificationElementID = 'message';
+	alert('Starting timers');
+	startTimer();
+	$('.b1').bind('swiperight',function(event, info){
+		enableButtons(false);
+		refreshData(1);	
+	});	
+	$('.b2').bind('swiperight',function(event, info){
+		enableButtons(false);
+		refreshData(0);	
+	});		
+	x = new SmsPlugin;
+	x.send('43535353','ertetet', function () {alert ('success');}, function(error) { alert('failed ' + error.Message);});
+}
 
-	<link rel="stylesheet" href="jquery.mobile-1.0a1.min.css" /> 
-	<script src="jquery-1.4.3.min.js"></script> 
-	<script src="jquery.mobile-1.0a1.min.js"></script>
-	
-	<script type="text/javascript">
+function enableButtons (state){		
+		if(state){
+			$('.b1').removeClass("ui-disabled");
+			$('.b2').removeClass("ui-disabled");
+		}
+		else{
+			$('.b1').addClass("ui-disabled");
+			$('.b2').addClass("ui-disabled");			
+		}
+		if(!state){
+			setTimeout(function (){
+				enableButtons(true);
+			}, 10*1000);
+		}
+}
+</script>
 
-	$( function() {
-		
-		$('#searchButton').click(function() {
-		  			
-  			$.getJSON('http://api.alternativeto.net/software/'+$('#searchBox').val()+'/?count=15', 
-  			function(data) {
-  			    
-  			    var items=data.Items;
-  			    var list = $('#list');
-  			    list.html("");
-  				$.each(items, function(key, val) {
-  				    
-    				list.append(
-      				  $(document.createElement('li')).html(val.Name)
-    				);
-  				});
-  				
-  				
-  				list.listview("destroy").listview()
-
-			});
-  			
-		});
-
-  	    document.addEventListener("deviceready", onDeviceReady, false);
-
-	} );
-	
-
-    // PhoneGap is loaded and it is now safe to make calls PhoneGap methods
-    //
-    function onDeviceReady() {
+<div id="page" data-role="page" data-theme="a">
+	<div data-role="header">
+		<h1>Traffic watcher</h1>
+	</div>
+	<div data-role="content">	
+		<img src="wifi.png" style="margin-left:auto;margin-right:auto;display:block"/>
         
-		    function reachableCallback(reachability) {
-    			// There is no consistency on the format of reachability
-    			var networkState = reachability.code || reachability;
+    	<div id="message" style="display:block;margin-left:auto;margin-right:auto;text-align:center;padding-top:20px;padding-bottom:20px;font-size:large;color:red;max-height:180px" onClick="">
+    	Information about Radars in 500 m as received from server
+	    </div>        
+	    <a href="#" class="b2" data-role="button" data-icon="arrow-r" data-theme="b" style="height:100px"><div>Swipe dreapta cand observi <br/>eveniment</div></a>
+	
+		<a href="#" class="b1" data-role="button" data-icon="arrow-r" data-theme="a" style="height:100px;font-size:large;""><div>Swipe dreapta cand vezi <br/>RADAR</div></a>
 
-    			var states = {};
-    			states[NetworkStatus.NOT_REACHABLE]                      = 'No network connection';
-    			states[NetworkStatus.REACHABLE_VIA_CARRIER_DATA_NETWORK] = 'Carrier data connection';
-    			states[NetworkStatus.REACHABLE_VIA_WIFI_NETWORK]         = 'WiFi connection';
-
-    			alert('Connection type: ' + states[networkState]);
-			}
-
-			navigator.network.isReachable('phonegap.com', reachableCallback);
-  			
-
-    }
-
-</script>  
-  
-</head>
-<body>
-
-    <div data-role="page" id="home"> 
- 
-  <div data-role="header"> 
-    <h1>AlternativeTo Home</h1> 
-  </div> 
- 
-  <div data-role="content">
-    <p>Find Alternatives To Your favourite Softwares </p>
-    <p><a href="#search" data-role="button">Search Alternatives</a></p>    
-    <p><a href="#recent" data-role="button">Recent Alternatives</a></p>
-  </div> 
- 
-</div> 
- 
-<div data-role="page" id="search"> 
- 
-  <div data-role="header" data-position="fixed"> 
-    <h1>Search Alternatives</h1> 
-    <div class="ui-body ui-body-b"> 
-     
-         <input type="text" name="search" id="searchBox" value="" data-theme="a" /> 
-         <button type="submit" data-theme="a" id="searchButton">Search</button>     
-      
-    </div>  
-  </div> 
- 
-  <div data-role="content"> 
-     
-     <ul data-role="listview" id="list"> 
-      
-    </ul> 
-      
-        
-    
-  </div> 
- 
+	</div>
 </div>
 
-<div data-role="page" id="recent"> 
- 
-  <div data-role="header"> 
-    <h1> Recent Alternatives</h1> 
-  </div> 
- 
-  <div data-role="content"> 
-    <p>This app rocks!</p> 
-     
-  </div> 
- 
-</div> 
- 
 </body>
 </html>
